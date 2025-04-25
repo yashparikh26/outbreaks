@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Map - Global Disease Tracker</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/map/js/world.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="../index.html">
+                <i class="fas fa-virus-slash me-2"></i>Global Disease Tracker
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">
+                            <i class="fas fa-chart-line me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="map.html">
+                            <i class="fas fa-globe me-1"></i>Global Map
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="comparison.html">
+                            <i class="fas fa-balance-scale me-1"></i>Comparison
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="explorer.html">
+                            <i class="fas fa-database me-1"></i>Data Explorer
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 pt-4">
+        <h1 class="mb-4">Global Disease Map</h1>
+        
+        <!-- Map Controls -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="mapMetric" class="form-label">Metric</label>
+                        <select class="form-select" id="mapMetric">
+                            <option value="cases">Total Cases</option>
+                            <option value="deaths">Total Deaths</option>
+                            <option value="active">Active Cases</option>
+                            <option value="recovered">Recovered Cases</option>
+                            <option value="rate">Infection Rate</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="mapDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="mapDate">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="mapScale" class="form-label">Scale</label>
+                        <select class="form-select" id="mapScale">
+                            <option value="linear">Linear</option>
+                            <option value="log">Logarithmic</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Map -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div id="worldMap" style="height: 600px;"></div>
+            </div>
+        </div>
+
+        <!-- Country Details -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Selected Country Details</h5>
+                        <div id="countryDetails">
+                            <p class="text-muted">Select a country on the map to view details</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Top Affected Countries</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Country</th>
+                                        <th>Cases</th>
+                                        <th>Deaths</th>
+                                        <th>Recovery Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="topCountries">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/map.js"></script>
+</body>
+</html> 

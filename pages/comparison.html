@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Comparison Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+        .comparison-controls {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center mb-4">Disease Comparison Tool</h2>
+        
+        <div class="comparison-controls">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="disease1">First Disease:</label>
+                        <select id="disease1" class="form-select">
+                            <option value="hiv">HIV Prevalence</option>
+                            <option value="smallpox">Smallpox Deaths</option>
+                            <option value="covid">COVID-19 Deaths</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="disease2">Second Disease:</label>
+                        <select id="disease2" class="form-select">
+                            <option value="smallpox">Smallpox Deaths</option>
+                            <option value="covid">COVID-19 Deaths</option>
+                            <option value="hiv">HIV Prevalence</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="country">Country:</label>
+                        <select id="country" class="form-select">
+                            <option value="all">All Countries</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="startYear">Start Year:</label>
+                        <input type="number" id="startYear" class="form-control" min="1774" max="2023">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="endYear">End Year:</label>
+                        <input type="number" id="endYear" class="form-control" min="1774" max="2023">
+                    </div>
+                </div>
+            </div>
+            <button id="compareBtn" class="btn btn-primary">Compare</button>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="chart-container">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="table-container">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th id="disease1Header">Disease 1</th>
+                                <th id="disease2Header">Disease 2</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparisonTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/visualizations.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const disease1Select = document.getElementById('disease1');
+            const disease2Select = document.getElementById('disease2');
+            const countrySelect = document.getElementById('country');
+            const startYearInput = document.getElementById('startYear');
+            const endYearInput = document.getElementById('endYear');
+            const compareBtn = document.getElementById('compareBtn');
+            const disease1Header = document.getElementById('disease1Header');
+            const disease2Header = document.getElementById('disease2Header');
+
+            // Initialize comparison chart
+            let comparisonChart = null;
+
+            // Populate country options
+            function populateCountries() {
+                const countries = new Set();
+                hivData.data.forEach(item => countries.add(item.country));
+                smallpoxData.data.forEach(item => countries.add(item.country));
+                covidData.data.forEach(item => countries.add(item.country));
+                
+                countrySelect.innerHTML = '<option value="all">All Countries</option>';
+                countries.forEach(country => {
+                    const option = document.createElement('option');
+                    option.value = country;
+                    option.textContent = country;
+                    countrySelect.appendChild(option);
+                });
+            }
+
+            // Update year range based on selected diseases
+            function updateYearRange() {
+                const disease1 = disease1Select.value;
+                const disease2 = disease2Select.value;
+                
+                let minYear = 2023;
+                let maxYear = 1774;
+                
+                if (disease1 === 'hiv' || disease2 === 'hiv') {
+                    minYear = Math.min(minYear, 1990);
+                    maxYear = Math.max(maxYear, 2015);
+                }
+                if (disease1 === 'smallpox' || disease2 === 'smallpox') {
+                    minYear = Math.min(minYear, 1774);
+                    maxYear = Math.max(maxYear, 1870);
+                }
+                if (disease1 === 'covid' || disease2 === 'covid') {
+                    minYear = Math.min(minYear, 2020);
+                    maxYear = Math.max(maxYear, 2023);
+                }
+                
+                startYearInput.min = minYear;
+                startYearInput.max = maxYear;
+                endYearInput.min = minYear;
+                endYearInput.max = maxYear;
+                
+                startYearInput.value = minYear;
+                endYearInput.value = maxYear;
+            }
+
+            // Compare diseases
+            function compareDiseases() {
+                const disease1 = disease1Select.value;
+                const disease2 = disease2Select.value;
+                const country = countrySelect.value;
+                const startYear = parseInt(startYearInput.value);
+                const endYear = parseInt(endYearInput.value);
+
+                // Update headers
+                disease1Header.textContent = disease1 === 'hiv' ? 'HIV Prevalence (%)' : 
+                                           disease1 === 'smallpox' ? 'Smallpox Deaths (per 1,000)' : 
+                                           'COVID-19 Deaths (per 100,000)';
+                disease2Header.textContent = disease2 === 'hiv' ? 'HIV Prevalence (%)' : 
+                                           disease2 === 'smallpox' ? 'Smallpox Deaths (per 1,000)' : 
+                                           'COVID-19 Deaths (per 100,000)';
+
+                // Get data for comparison
+                const data1 = getDiseaseData(disease1, country, startYear, endYear);
+                const data2 = getDiseaseData(disease2, country, startYear, endYear);
+
+                // Create comparison chart
+                createComparisonChart(data1, data2, disease1, disease2);
+                
+                // Update comparison table
+                updateComparisonTable(data1, data2, disease1, disease2);
+            }
+
+            // Get disease data
+            function getDiseaseData(disease, country, startYear, endYear) {
+                let data = [];
+                if (disease === 'hiv') {
+                    data = hivData.data.filter(item => 
+                        (country === 'all' || item.country === country) &&
+                        item.year >= startYear && item.year <= endYear
+                    );
+                } else if (disease === 'smallpox') {
+                    data = smallpoxData.data.filter(item => 
+                        (country === 'all' || item.country === country) &&
+                        item.year >= startYear && item.year <= endYear
+                    );
+                } else if (disease === 'covid') {
+                    data = covidData.data.filter(item => 
+                        (country === 'all' || item.country === country) &&
+                        new Date(item.date).getFullYear() >= startYear && 
+                        new Date(item.date).getFullYear() <= endYear
+                    );
+                }
+                return data;
+            }
+
+            // Create comparison chart
+            function createComparisonChart(data1, data2, disease1, disease2) {
+                const ctx = document.getElementById('comparisonChart');
+                if (!ctx) return;
+
+                // Destroy existing chart if it exists
+                if (comparisonChart) {
+                    comparisonChart.destroy();
+                }
+
+                const labels = [...new Set([
+                    ...data1.map(item => disease1 === 'covid' ? item.date : item.year),
+                    ...data2.map(item => disease2 === 'covid' ? item.date : item.year)
+                ])].sort();
+
+                const dataset1 = {
+                    label: disease1 === 'hiv' ? 'HIV Prevalence (%)' : 
+                          disease1 === 'smallpox' ? 'Smallpox Deaths (per 1,000)' : 
+                          'COVID-19 Deaths (per 100,000)',
+                    data: labels.map(label => {
+                        const item = data1.find(d => 
+                            disease1 === 'covid' ? d.date === label : d.year === label
+                        );
+                        return item ? (disease1 === 'hiv' ? item.value * 100 : 
+                                     disease1 === 'smallpox' ? item.value * 1000 : 
+                                     item.value) : null;
+                    }),
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                };
+
+                const dataset2 = {
+                    label: disease2 === 'hiv' ? 'HIV Prevalence (%)' : 
+                          disease2 === 'smallpox' ? 'Smallpox Deaths (per 1,000)' : 
+                          'COVID-19 Deaths (per 100,000)',
+                    data: labels.map(label => {
+                        const item = data2.find(d => 
+                            disease2 === 'covid' ? d.date === label : d.year === label
+                        );
+                        return item ? (disease2 === 'hiv' ? item.value * 100 : 
+                                     disease2 === 'smallpox' ? item.value * 1000 : 
+                                     item.value) : null;
+                    }),
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.1
+                };
+
+                comparisonChart = new Chart(ctx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [dataset1, dataset2]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Disease Comparison'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Update comparison table
+            function updateComparisonTable(data1, data2, disease1, disease2) {
+                const tableBody = document.getElementById('comparisonTableBody');
+                tableBody.innerHTML = '';
+
+                const allYears = [...new Set([
+                    ...data1.map(item => disease1 === 'covid' ? item.date : item.year),
+                    ...data2.map(item => disease2 === 'covid' ? item.date : item.year)
+                ])].sort();
+
+                allYears.forEach(year => {
+                    const row = document.createElement('tr');
+                    const value1 = data1.find(item => 
+                        disease1 === 'covid' ? item.date === year : item.year === year
+                    );
+                    const value2 = data2.find(item => 
+                        disease2 === 'covid' ? item.date === year : item.year === year
+                    );
+
+                    row.innerHTML = `
+                        <td>${year}</td>
+                        <td>${value1 ? (disease1 === 'hiv' ? (value1.value * 100).toFixed(2) + '%' : 
+                                       disease1 === 'smallpox' ? (value1.value * 1000).toFixed(2) : 
+                                       value1.value.toFixed(2)) : '-'}</td>
+                        <td>${value2 ? (disease2 === 'hiv' ? (value2.value * 100).toFixed(2) + '%' : 
+                                       disease2 === 'smallpox' ? (value2.value * 1000).toFixed(2) : 
+                                       value2.value.toFixed(2)) : '-'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            // Event listeners
+            disease1Select.addEventListener('change', () => {
+                updateYearRange();
+            });
+
+            disease2Select.addEventListener('change', () => {
+                updateYearRange();
+            });
+
+            compareBtn.addEventListener('click', compareDiseases);
+
+            // Initialize
+            populateCountries();
+            updateYearRange();
+            compareDiseases();
+        });
+    </script>
+</body>
+</html> 

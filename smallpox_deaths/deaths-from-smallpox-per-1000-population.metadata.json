@@ -1,0 +1,33 @@
+{
+  "chart": {
+    "title": "Smallpox death rate",
+    "subtitle": "The annual number of deaths from [smallpox](#dod:smallpox) per 1,000 people.",
+    "note": "Sweden started vaccinating people against smallpox in 1801. It became compulsory in Sweden in 1816, England in 1853, Scotland in 1864, the Netherlands in 1873, Prussia in 1874, and Belgium and Austria never made the smallpox vaccination mandatory.",
+    "citation": "Edwardes (1902)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/deaths-from-smallpox-per-1000-population?v=1&csvType=full&useColumnShortNames=false",
+    "selection": [
+      "Austria",
+      "Belgium",
+      "Prussia",
+      "Netherlands",
+      "Scotland",
+      "England",
+      "Sweden"
+    ]
+  },
+  "columns": {
+    "Number of deaths from smallpox per 1,000 population (Edwardes 1902)": {
+      "titleShort": "Deaths from smallpox",
+      "titleLong": "Deaths from smallpox",
+      "unit": "",
+      "timespan": "",
+      "type": "Numeric",
+      "owidVariableId": 66560,
+      "citationShort": " – processed by Our World in Data",
+      "citationLong": " – processed by Our World in Data. “Deaths from smallpox” [dataset]. Edwardes (1902) [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/66560.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-04-15",
+  "activeFilters": {}
+}

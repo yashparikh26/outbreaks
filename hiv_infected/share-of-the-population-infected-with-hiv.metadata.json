@@ -1,0 +1,40 @@
+{
+  "chart": {
+    "title": "Share of the population living with HIV",
+    "subtitle": "Estimated share of the population aged 15–49 living with [HIV](#dod:hiv).",
+    "citation": "Joint United Nations Programme on HIV/AIDS (2024)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/share-of-the-population-infected-with-hiv?v=1&csvType=full&useColumnShortNames=false",
+    "selection": [
+      "South Africa",
+      "Mozambique",
+      "Zambia",
+      "Zimbabwe",
+      "Eswatini",
+      "Brazil",
+      "Kenya",
+      "United States"
+    ]
+  },
+  "columns": {
+    "HIV prevalence - Sex: total - Age: 15-49 - Central estimate": {
+      "titleShort": "Share of the population living with HIV",
+      "titleLong": "Share of the population living with HIV - aged 15-49, central estimate",
+      "descriptionShort": "Share of people aged 15-49 who test positive for HIV at a given time. This is the central estimate.",
+      "descriptionKey": [
+        "Known as \"HIV prevalence\", it is estimated by dividing the number of people in a given group who tested positive for HIV by all the people that were tested."
+      ],
+      "shortUnit": "%",
+      "unit": "%",
+      "timespan": "1990-2023",
+      "type": "Numeric",
+      "owidVariableId": 1012977,
+      "shortName": "hiv_prevalence__age_15_49__sex_total__estimate_central",
+      "lastUpdated": "2025-01-22",
+      "citationShort": "Joint United Nations Programme on HIV/AIDS (2024) – with minor processing by Our World in Data",
+      "citationLong": "Joint United Nations Programme on HIV/AIDS (2024) – with minor processing by Our World in Data. “Share of the population living with HIV – aged 15-49, central estimate” [dataset]. Joint United Nations Programme on HIV/AIDS, “Global AIDS Update” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1012977.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-04-15",
+  "activeFilters": {}
+}

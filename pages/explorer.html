@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Explorer - Global Disease Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .disease-section {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: none;
+        }
+        .disease-section.active {
+            display: block;
+        }
+        .disease-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .data-controls {
+            background-color: #fff;
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .hiv-section {
+            border: 2px solid #28a745;
+        }
+        .smallpox-section {
+            border: 2px solid #dc3545;
+        }
+        .covid-section {
+            border: 2px solid #17a2b8;
+        }
+        .hiv-header {
+            background-color: #28a745;
+            color: white;
+        }
+        .smallpox-header {
+            background-color: #dc3545;
+            color: white;
+        }
+        .covid-header {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .disease-selector {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center mb-4">Data Explorer</h2>
+        
+        <div class="disease-selector">
+            <div class="form-group">
+                <label for="diseaseSelect">Select Disease:</label>
+                <select id="diseaseSelect" class="form-control">
+                    <option value="hiv">HIV</option>
+                    <option value="smallpox">Smallpox</option>
+                    <option value="covid">COVID-19</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- HIV Section -->
+        <div id="hivSection" class="disease-section hiv-section">
+            <div class="disease-header hiv-header">
+                <h3 class="mb-0">HIV Data</h3>
+            </div>
+            <div class="data-controls">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="hivSearchCountry">Search Country:</label>
+                            <input type="text" id="hivSearchCountry" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="hivSearchYear">Search Year:</label>
+                            <input type="number" id="hivSearchYear" class="form-control" min="1990" max="2015">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button id="hivSearchBtn" class="btn btn-primary">Search</button>
+                        <button id="hivResetBtn" class="btn btn-secondary">Reset</button>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="hivCountry">Country:</label>
+                            <input type="text" id="hivCountry" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="hivYear">Year:</label>
+                            <input type="number" id="hivYear" class="form-control" min="1990" max="2015">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="hivValue">Prevalence (%):</label>
+                            <input type="number" id="hivValue" class="form-control" step="0.01">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button id="insertHIVBtn" class="btn btn-success">Insert</button>
+                        <button id="updateHIVBtn" class="btn btn-warning">Update</button>
+                        <button id="deleteHIVBtn" class="btn btn-danger">Delete</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="hivChart"></canvas>
+            </div>
+
+            <div class="table-container">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Country</th>
+                            <th>Year</th>
+                            <th>Prevalence (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hivTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Smallpox Section -->
+        <div id="smallpoxSection" class="disease-section smallpox-section">
+            <div class="disease-header smallpox-header">
+                <h3 class="mb-0">Smallpox Data</h3>
+            </div>
+            <div class="data-controls">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="smallpoxSearchCountry">Search Country:</label>
+                            <input type="text" id="smallpoxSearchCountry" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="smallpoxSearchYear">Search Year:</label>
+                            <input type="number" id="smallpoxSearchYear" class="form-control" min="1774" max="1870">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button id="smallpoxSearchBtn" class="btn btn-primary">Search</button>
+                        <button id="smallpoxResetBtn" class="btn btn-secondary">Reset</button>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="smallpoxCountry">Country:</label>
+                            <input type="text" id="smallpoxCountry" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="smallpoxYear">Year:</label>
+                            <input type="number" id="smallpoxYear" class="form-control" min="1774" max="1870">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="smallpoxValue">Deaths (per 1,000):</label>
+                            <input type="number" id="smallpoxValue" class="form-control" step="0.01">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button id="insertSmallpoxBtn" class="btn btn-success">Insert</button>
+                        <button id="updateSmallpoxBtn" class="btn btn-warning">Update</button>
+                        <button id="deleteSmallpoxBtn" class="btn btn-danger">Delete</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="smallpoxChart"></canvas>
+            </div>
+
+            <div class="table-container">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Country</th>
+                            <th>Year</th>
+                            <th>Deaths (per 1,000)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="smallpoxTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- COVID-19 Section -->
+        <div id="covidSection" class="disease-section covid-section">
+            <div class="disease-header covid-header">
+                <h3 class="mb-0">COVID-19 Data</h3>
+            </div>
+            <div class="data-controls">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="covidSearchCountry">Search Country:</label>
+                            <input type="text" id="covidSearchCountry" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="covidSearchDate">Search Date:</label>
+                            <input type="date" id="covidSearchDate" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button id="covidSearchBtn" class="btn btn-primary">Search</button>
+                        <button id="covidResetBtn" class="btn btn-secondary">Reset</button>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="covidCountry">Country:</label>
+                            <input type="text" id="covidCountry" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="covidDate">Date:</label>
+                            <input type="date" id="covidDate" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="covidValue">Deaths (per 100,000):</label>
+                            <input type="number" id="covidValue" class="form-control" step="0.01">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="covidLowerCI">Lower CI:</label>
+                            <input type="number" id="covidLowerCI" class="form-control" step="0.01">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="covidUpperCI">Upper CI:</label>
+                            <input type="number" id="covidUpperCI" class="form-control" step="0.01">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button id="insertCOVIDBtn" class="btn btn-success">Insert</button>
+                        <button id="updateCOVIDBtn" class="btn btn-warning">Update</button>
+                        <button id="deleteCOVIDBtn" class="btn btn-danger">Delete</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="covidChart"></canvas>
+            </div>
+
+            <div class="table-container">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Country</th>
+                            <th>Date</th>
+                            <th>Deaths (per 100,000)</th>
+                            <th>Lower CI</th>
+                            <th>Upper CI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="covidTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/visualizations.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const diseaseSelect = document.getElementById('diseaseSelect');
+            const sections = {
+                hiv: document.getElementById('hivSection'),
+                smallpox: document.getElementById('smallpoxSection'),
+                covid: document.getElementById('covidSection')
+            };
+
+            // Show initial section
+            sections[diseaseSelect.value].classList.add('active');
+
+            // Handle disease selection change
+            diseaseSelect.addEventListener('change', function() {
+                // Hide all sections
+                Object.values(sections).forEach(section => section.classList.remove('active'));
+                // Show selected section
+                sections[this.value].classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html> 
